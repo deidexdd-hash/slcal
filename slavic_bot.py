@@ -15,7 +15,9 @@
 
 import asyncio
 import logging
+import os
 from datetime import date
+from aiohttp import web
 from telegram import Bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
@@ -315,6 +317,11 @@ async def send_reminders(bot: Bot):
         logging.info(f"Отправлено: {holiday[2]} (через {days_left} дней)")
 
 
+async def health_handler(request):
+    """Health check endpoint для Render."""
+    return web.Response(text="OK")
+
+
 async def main():
     bot = Bot(token=BOT_TOKEN)
 
@@ -334,11 +341,22 @@ async def main():
     scheduler.start()
     logging.info(f"Планировщик запущен: проверка каждый день в {CHECK_HOUR:02d}:{CHECK_MINUTE:02d}")
 
+    # HTTP-сервер для Render (web service требует открытый порт)
+    port = int(os.environ.get("PORT", 8080))
+    app = web.Application()
+    app.router.add_get("/", health_handler)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    logging.info(f"HTTP-сервер запущен на порту {port}")
+
     try:
         await asyncio.Event().wait()
     except (KeyboardInterrupt, SystemExit):
         logging.info("Бот остановлен")
         scheduler.shutdown()
+        await runner.cleanup()
 
 
 if __name__ == "__main__":

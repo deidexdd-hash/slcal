@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: slavic-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python slavic_bot.py
