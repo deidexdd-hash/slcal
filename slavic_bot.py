@@ -24,8 +24,8 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 # ──────────────────────────────────────────
 # НАСТРОЙКИ — заполни перед запуском
 # ──────────────────────────────────────────
-BOT_TOKEN = "ВСТАВЬ_ТОКЕН_БОТА"     # от @BotFather
-CHAT_ID   = "ВСТАВЬ_СВОЙ_CHAT_ID"  # от @userinfobot
+BOT_TOKEN = os.environ["BOT_TOKEN"]   # задаётся в Render → Environment
+CHAT_ID   = os.environ["CHAT_ID"]    # задаётся в Render → Environment
 
 # Время ежедневной проверки (по московскому времени)
 CHECK_HOUR   = 9
